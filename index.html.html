@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sistema Garçom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 30px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 26px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .item-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+        
+        .item-container:hover {
+            border-color: #667eea;
+        }
+        
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        
+        .item-row input,
+        .item-row select {
+            flex: 1;
+        }
+        
+        .item-row input:first-child {
+            max-width: 70px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .item-preco {
+            color: #28a745;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px;
+            background: #d4edda;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            min-width: 45px;
+        }
+        
+        .btn-remove:active {
+            transform: scale(0.95);
+            background: #c82333;
+        }
+        
+        .btn-add {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+        
+        .btn-add:active {
+            transform: scale(0.98);
+            background: #218838;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-submit:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .total-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .total-preview small {
+            display: block;
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+        
+        .success-message,
+        .error-message {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-weight: 600;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+        
+        .empty-cart-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .config-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            min-height: 100px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-save {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍽️ Sistema Garçom</h1>
+            <p>Registre o pedido rapidamente</p>
+        </div>
+        
+        <div class="success-message" id="successMsg">✅ Pedido enviado com sucesso!</div>
+        <div class="error-message" id="errorMsg">❌ Erro ao enviar pedido. Verifique sua conexão.</div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Enviando pedido...</p>
+        </div>
+        
+        <form id="pedidoForm" style="display: block;">
+            <div class="form-group">
+                <label>👤 Seu Nome (Garçom)</label>
+                <input type="text" id="garcom" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            
+            <div class="form-group">
+                <label>🪑 Número da Mesa</label>
+                <input type="number" id="mesa" placeholder="Ex: 5" required min="1" inputmode="numeric">
+            </div>
+            
+            <div class="form-group">
+                <label>📋 Itens do Pedido</label>
+                <div id="itensContainer"></div>
+                <button type="button" class="btn-add" onclick="adicionarItem()">+ Adicionar Item</button>
+            </div>
+            
+            <div class="total-preview" id="totalPreview" style="display: none;">
+                <small>Total do Pedido</small>
+                <div id="totalValue">R$ 0,00</div>
+            </div>
+            
+            <div class="form-group">
+                <label>📝 Observações (Opcional)</label>
+                <textarea id="observacoes" rows="3" placeholder="Ex: Sem cebola, mal passado..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit">🚀 Enviar Pedido para Cozinha</button>
+        </form>
+    </div>
+
+    <button class="config-button" onclick="abrirConfig()">⚙️</button>
+
+    <div class="modal" id="configModal">
+        <div class="modal-content">
+            <h2>⚙️ Configurações</h2>
+            <div class="form-group">
+                <label>URL do Webhook N8N</label>
+                <textarea id="webhookUrl" placeholder="https://seu-n8n.com/webhook/pedido-garcom"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-save" onclick="salvarConfig()">Salvar</button>
+                <button class="btn-cancel" onclick="fecharConfig()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO - Edite aqui ou use o botão de configurações
+        let WEBHOOK_URL = 'https://seu-n8n.com/webhook/pedido-garcom';
+        
+        // Cardápio do restaurante - EDITE AQUI COM SEUS PRODUTOS!
+        const cardapio = [
+            { nome: 'Hambúrguer Clássico', preco: 25.00, estoque: 50, categoria: 'Lanches' },
+            { nome: 'Hambúrguer Bacon', preco: 28.00, estoque: 40, categoria: 'Lanches' },
+            { nome: 'X-Salada', preco: 22.00, estoque: 45, categoria: 'Lanches' },
+            { nome: 'Batata Frita Pequena', preco: 12.00, estoque: 30, categoria: 'Acompanhamentos' },
+            { nome: 'Batata Frita Grande', preco: 18.00, estoque: 25, categoria: 'Acompanhamentos' },
+            { nome: 'Onion Rings', preco: 15.00, estoque: 20, categoria: 'Acompanhamentos' },
+            { nome: 'Refrigerante Lata', preco: 8.00, estoque: 100, categoria: 'Bebidas' },
+            { nome: 'Refrigerante 600ml', preco: 12.00, estoque: 80, categoria: 'Bebidas' },
+            { nome: 'Suco Natural', preco: 12.00, estoque: 20, categoria: 'Bebidas' },
+            { nome: 'Água Mineral', preco: 5.00, estoque: 150, categoria: 'Bebidas' },
+            { nome: 'Pizza Margherita', preco: 45.00, estoque: 15, categoria: 'Pizzas' },
+            { nome: 'Pizza Calabresa', preco: 48.00, estoque: 20, categoria: 'Pizzas' },
+            { nome: 'Pizza Portuguesa', preco: 52.00, estoque: 18, categoria: 'Pizzas' },
+            { nome: 'Cerveja Long Neck', preco: 10.00, estoque: 80, categoria: 'Bebidas' },
+            { nome: 'Cerveja Lata', preco: 8.00, estoque: 100, categoria: 'Bebidas' },
+            { nome: 'Sobremesa do Dia', preco: 18.00, estoque: 30, categoria: 'Sobremesas' },
+            { nome: 'Petit Gateau', preco: 22.00, estoque: 15, categoria: 'Sobremesas' },
+            { nome: 'Brownie', preco: 16.00, estoque: 25, categoria: 'Sobremesas' }
+        ];
+        
+        let itemCount = 0;
+        
+        // Carregar configurações salvas
+        window.addEventListener('load', () => {
+            const savedUrl = localStorage.getItem('webhookUrl');
+            if (savedUrl) {
+                WEBHOOK_URL = savedUrl;
+            }
+            
+            const savedGarcom = localStorage.getItem('garcomNome');
+            if (savedGarcom) {
+                document.getElementById('garcom').value = savedGarcom;
+            }
+            
+            adicionarItem();
+        });
+        
+        function abrirConfig() {
+            document.getElementById('webhookUrl').value = WEBHOOK_URL;
+            document.getElementById('configModal').style.display = 'block';
+        }
+        
+        function fecharConfig() {
+            document.getElementById('configModal').style.display = 'none';
+        }
+        
+        function salvarConfig() {
+            const url = document.getElementById('webhookUrl').value.trim();
+            if (url) {
+                WEBHOOK_URL = url;
+                localStorage.setItem('webhookUrl', url);
+                alert('✅ Configurações salvas!');
+                fecharConfig();
+            }
+        }
+        
+        function adicionarItem() {
+            itemCount++;
+            const container = document.getElementById('itensContainer');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item-container';
+            itemDiv.id = `item-${itemCount}`;
+            
+            // Agrupar por categoria
+            let optionsHtml = '<option value="">Selecione o produto</option>';
+            const categorias = [...new Set(cardapio.map(p => p.categoria))];
+            
+            categorias.forEach(cat => {
+                optionsHtml += `<optgroup label="${cat}">`;
+                cardapio.filter(p => p.categoria === cat).forEach(p => {
+                    optionsHtml += `<option value="${p.nome}" data-preco="${p.preco}" data-estoque="${p.estoque}">${p.nome} - R$ ${p.preco.toFixed(2)}</option>`;
+                });
+                optionsHtml += '</optgroup>';
+            });
+            
+            itemDiv.innerHTML = `
+                <div class="item-row">
+                    <input type="number" placeholder="Qtd" min="1" value="1" required id="qtd-${itemCount}" onchange="calcularTotal()">
+                    <select required id="produto-${itemCount}" onchange="atualizarPreco(${itemCount}); calcularTotal()">
+                        ${optionsHtml}
+                    </select>
+                    <button type="button" class="btn-remove" onclick="removerItem(${itemCount})">🗑️</button>
+                </div>
+                <div class="item-preco" id="preco-${itemCount}" style="display: none;">
+                    Subtotal: R$ 0,00
+                </div>
+            `;
+            
+            container.appendChild(itemDiv);
+        }
+        
+        function removerItem(id) {
+            const item = document.getElementById(`item-${id}`);
+            if (item) {
+                item.remove();
+                calcularTotal();
+            }
+        }
+        
+        function atualizarPreco(id) {
+            const produtoSelect = document.getElementById(`produto-${id}`);
+            const precoDiv = document.getElementById(`preco-${id}`);
+            const qtdInput = document.getElementById(`qtd-${id}`);
+            
+            if (produtoSelect.value) {
+                const selectedOption = produtoSelect.options[produtoSelect.selectedIndex];
+                const preco = parseFloat(selectedOption.getAttribute('data-preco'));
+                const qtd = parseInt(qtdInput.value) || 1;
+                const subtotal = preco * qtd;
+                
+                precoDiv.style.display = 'block';
+                precoDiv.textContent = `Subtotal: R$ ${subtotal.toFixed(2)}`;
+            } else {
+                precoDiv.style.display = 'none';
+            }
+        }
+        
+        function calcularTotal() {
+            let total = 0;
+            let temItens = false;
+            
+            for (let i = 1; i <= itemCount; i++) {
+                const itemDiv = document.getElementById(`item-${i}`);
+                if (!itemDiv) continue;
+                
+                const qtdInput = document.getElementById(`qtd-${i}`);
+                const produtoSelect = document.getElementById(`produto-${i}`);
+                
+                if (produtoSelect && produtoSelect.value) {
+                    temItens = true;
+                    const selectedOption = produtoSelect.options[produtoSelect.selectedIndex];
+                    const preco = parseFloat(selectedOption.getAttribute('data-preco'));
+                    const qtd = parseInt(qtdInput.value) || 1;
+                    total += preco * qtd;
+                    
+                    atualizarPreco(i);
+                }
+            }
+            
+            const totalPreview = document.getElementById('totalPreview');
+            const totalValue = document.getElementById('totalValue');
+            
+            if (temItens && total > 0) {
+                totalPreview.style.display = 'block';
+                totalValue.textContent = `R$ ${total.toFixed(2)}`;
+            } else {
+                totalPreview.style.display = 'none';
+            }
+        }
+        
+        document.getElementById('pedidoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const garcom = document.getElementById('garcom').value;
+            const mesa = document.getElementById('mesa').value;
+            const observacoes = document.getElementById('observacoes').value;
+            
+            // Salvar nome do garçom
+            localStorage.setItem('garcomNome', garcom);
+            
+            // Coletar itens
+            const itens = [];
+            for (let i = 1; i <= itemCount; i++) {
+                const itemDiv = document.getElementById(`item-${i}`);
+                if (!itemDiv) continue;
+                
+                const qtd = document.getElementById(`qtd-${i}`).value;
+                const produtoSelect = document.getElementById(`produto-${i}`);
+                const produto = produtoSelect.value;
+                
+                if (!produto) continue;
+                
+                const selectedOption = produtoSelect.options[produtoSelect.selectedIndex];
+                const preco = parseFloat(selectedOption.getAttribute('data-preco'));
+                const estoque = parseInt(selectedOption.getAttribute('data-estoque'));
+                
+                itens.push({
+                    nome: produto,
+                    quantidade: parseInt(qtd),
+                    preco: preco,
+                    estoque: estoque
+                });
+            }
+            
+            if (itens.length === 0) {
+                alert('⚠️ Adicione pelo menos um item ao pedido!');
+                return;
+            }
+            
+            const payload = {
+                garcom: garcom,
+                mesa: mesa,
+                itens: itens,
+                observacoes: observacoes
+            };
+            
+            document.getElementById('pedidoForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('pedidoForm').style.display = 'block';
+                
+                if (response.ok) {
+                    document.getElementById('successMsg').style.display = 'block';
+                    document.getElementById('pedidoForm').reset();
+                    document.getElementById('itensContainer').innerHTML = '';
+                    document.getElementById('totalPreview').style.display = 'none';
+                    itemCount = 0;
+                    adicionarItem();
+                    
+                    // Manter o nome do garçom
+                    document.getElementById('garcom').value = garcom;
+                    
+                    setTimeout(() => {
+                        document.getElementById('successMsg').style.display = 'none';
+                    }, 3000);
+                } else {
+                    throw new Error('Erro na resposta');
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('pedidoForm').style.display = 'block';
+                document.getElementById('errorMsg').style.display = 'block';
+                console.error('Erro:', error);
+                
+                setTimeout(() => {
+                    document.getElementById('errorMsg').style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
